@@ -24,8 +24,12 @@ module ActiveRecord
 
       def sql(tracer: OpenTracing.global_tracer, active_span: nil, args:)
         _, start, finish, _, payload = *args
+        
+        operation = payload.fetch(:name)
+        return if %w(SCHEMA).include?(operation)  
 
-        span = start_span(payload.fetch(:name),
+        #span = start_span(payload.fetch(:name),
+        span = start_span(operation,
                           tracer: tracer,
                           active_span: active_span,
                           start_time: start,
